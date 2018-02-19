@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "66862012535",
+    "firebase_url": "https://dzfgdzfgds.firebaseio.com",
+    "project_id": "dzfgdzfgds",
+    "storage_bucket": "dzfgdzfgds.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66862012535:android:58f08f9d255a92ab",
+        "android_client_info": {
+          "package_name": "com.example.wonderer.wonderer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "66862012535-a7k1nc0p8rlq5m7i6hqnb4i9svb1ockb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9j0hL6me5Jp2JbS2hSCkrOlZ5gki3rqE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
