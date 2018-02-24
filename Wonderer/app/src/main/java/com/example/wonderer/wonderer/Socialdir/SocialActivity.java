@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 
-import com.example.wonderer.wonderer.Homedir.Home;
 import com.example.wonderer.wonderer.R;
 import com.example.wonderer.wonderer.Util.Bottombarnav;
 import com.example.wonderer.wonderer.loginregister.Login;
@@ -32,8 +31,6 @@ public class SocialActivity extends Bottombarnav {
 
     public static List<Object> Socialcontents=new ArrayList<Object>();
 
-    public static List<Home> homelist=new ArrayList<Home>();
-
 FloatingActionButton fab;
     int start =0;
     int end = 100;
@@ -53,63 +50,63 @@ FloatingActionButton fab;
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
 
-
-        homelist=new ArrayList<Home>();
-
-        Login.home.addListenerForSingleValueEvent(new ValueEventListener() {
+        Login.root.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot d:dataSnapshot.getChildren()) {
-                    Home h=d.getValue(Home.class);
-                    homelist.add(h);
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        Login.plantour.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-
                 Socialcontents=new ArrayList<Object>();
+                List<dummytour> test=new ArrayList<dummytour>();
+                List<Plantour>  plan=new ArrayList<Plantour>();
+                DataSnapshot maketour=dataSnapshot.child("Newtrip");
+                DataSnapshot plantour=dataSnapshot.child("Plantrip");
 
-                for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot imageSnapshot: plantour.getChildren()) {
                     Plantour d=imageSnapshot.getValue(Plantour.class);
                     if(d.showing.equals("Yes"))
                     {
                         d.tourid=imageSnapshot.getKey().toString();
-                        Socialcontents.add(d);
+                        plan.add(d);
                     }
                 }
 
-                Login.maketour.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot imageSnapshot: maketour.getChildren()) {
                             dummytour d=imageSnapshot.getValue(dummytour.class);
                             d.tourid=imageSnapshot.getKey().toString();
-                            Socialcontents.add(d);
+                            test.add(d);
+                        }
+
+
+                int j=0;
+                int k=0;
+
+                for(int i=0;i<plan.size()+test.size();i++)
+                {
+                    if(j>=plan.size())
+                    {
+                      Socialcontents.add(test.get(k));
+                        adapter.notifyDataSetChanged();
+                        k++;
+                    }
+                    else if(k>=test.size())
+                    {
+                        Socialcontents.add(plan.get(j));
+                        adapter.notifyDataSetChanged();
+                        j++;
+                    }
+                    else
+                    {
+                        if(test.get(k).time>=plan.get(j).time)
+                        {
+                            Socialcontents.add(test.get(k));
                             adapter.notifyDataSetChanged();
+                            k++;
+                        }
+                        else
+                        {
+                            Socialcontents.add(plan.get(j));
+                            adapter.notifyDataSetChanged();
+                            j++;
                         }
                     }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                for(int i=0;i<Socialcontents.size();i++)
-                {
-
 
                 }
 
@@ -122,54 +119,7 @@ FloatingActionButton fab;
 
             }
         });
-        Login.maketour.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Socialcontents=new ArrayList<Object>();
-                for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
-                    dummytour d=imageSnapshot.getValue(dummytour.class);
-
-                    d.tourid=imageSnapshot.getKey().toString();
-                    Socialcontents.add(d);
-                    adapter.notifyDataSetChanged();
-                }
-
-                Login.plantour.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
-                            Plantour d=imageSnapshot.getValue(Plantour.class);
-
-                            if(d.showing.equals("Yes"))
-                            {
-                                d.tourid=imageSnapshot.getKey().toString();
-                                Socialcontents.add(d);
-                                adapter.notifyDataSetChanged();
-                            }
-
-                        }
-
-                        for(int i=0;i<Socialcontents.size();i++)
-                        {
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
 
     }

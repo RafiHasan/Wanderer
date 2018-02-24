@@ -8,9 +8,12 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 
 import com.example.wonderer.wonderer.R;
-import com.example.wonderer.wonderer.Socialdir.SocialActivity;
 import com.example.wonderer.wonderer.Util.Bottombarnav;
+import com.example.wonderer.wonderer.loginregister.Login;
 import com.example.wonderer.wonderer.plandir.Main2Activity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +44,30 @@ public static List<Home> homelist=new ArrayList<Home>();
       fab=(FloatingActionButton)findViewById(R.id.fab);
 
 
-      homelist=SocialActivity.homelist;
+      homelist=new ArrayList<Home>();
+
+
+      Login.home.addListenerForSingleValueEvent(new ValueEventListener() {
+          @Override
+          public void onDataChange(DataSnapshot dataSnapshot) {
+
+              for (DataSnapshot d:dataSnapshot.getChildren()) {
+                  Home h=d.getValue(Home.class);
+                  homelist.add(h);
+
+              }
+
+
+          }
+
+          @Override
+          public void onCancelled(DatabaseError databaseError) {
+
+          }
+      });
+
+
+
 
 
       fab.setOnClickListener(new View.OnClickListener() {

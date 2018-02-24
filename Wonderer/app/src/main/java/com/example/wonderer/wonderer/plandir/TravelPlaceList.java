@@ -6,10 +6,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.wonderer.wonderer.Homedir.Homelist;
 import com.example.wonderer.wonderer.R;
-import com.example.wonderer.wonderer.Socialdir.dummytour;
+import com.example.wonderer.wonderer.Util.AIsystem;
 import com.example.wonderer.wonderer.Util.Bottombarnav;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,31 +26,35 @@ public class TravelPlaceList extends Bottombarnav {
 
 
 
-
-
-    public static dummytour showtour;
-
-
   private RecyclerView mRecyclerView;
   private StaggeredGridLayoutManager mStaggeredLayoutManager;
   private TravelListAdapter mAdapter;
     FloatingActionButton fab;
+
+   public static int indicator=1;
+
   //private boolean isListView;
  // private Menu menu;
 
     public static DatabaseReference place;
+
  public static List<Place> placelist;
-    public static List<Place> plantour;
+    public static List<Place> placelist2;
+
+    public static List<Place> ai;
+
+   public static Plantour plan=new Plantour();
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-
+plan=new Plantour();
       fab=(FloatingActionButton)findViewById(R.id.fab);
       place= FirebaseDatabase.getInstance().getReference("Newplace");
 
       placelist=new ArrayList<Place>();
-      plantour=new ArrayList<Place>();
+      ai=new ArrayList<Place>();
       place.addListenerForSingleValueEvent(new ValueEventListener() {
           @Override
           public void onDataChange(DataSnapshot dataSnapshot) {
@@ -74,36 +79,19 @@ public class TravelPlaceList extends Bottombarnav {
           @Override
           public void onClick(View v) {
 
-              Plantour plan=new Plantour(plantour,Homelist.hometour);
+              plan.homelist=Homelist.hometour;
 
-              Main2Activity.showplantour=plan;
               Main2Activity.make=false;
+              AIsystem AI=new AIsystem();
+              TravelPlaceList.ai=  AI.Closelocation(TravelPlaceList.placelist,TravelPlaceList.plan.Locationlist);
+              placelist2=AI.Closelocation(TravelPlaceList.placelist);
+              Toast.makeText(getApplicationContext(),String.valueOf(TravelPlaceList.ai.size()),Toast.LENGTH_LONG).show();
               Intent i=new Intent(getApplicationContext(),Main2Activity.class);
               startActivity(i);
           }
       });
 
-   /* toolbar.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
 
-        if(Botombarapp.istrival==0) {
-          List<Vertex> loc = new ArrayList<Vertex>();
-          for (Vertex e : Botombarapp.VisitableLocation) {
-            if (e.selected) {
-              loc.add(e);
-            }
-          }
-          Trip t = new Trip(loc);
-
-          Botombarapp.Mytrip.add(t);
-
-          Intent intent4 = new Intent(Homelist.this, MapsActivity.class);
-          startActivity(intent4);
-        }
-      }
-    });*/
-    //setUpActionBar();
 
     mStaggeredLayoutManager = new StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL);//
 
@@ -122,5 +110,14 @@ public class TravelPlaceList extends Bottombarnav {
 
   }
 
+
+
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+
+
+    }
 
 }

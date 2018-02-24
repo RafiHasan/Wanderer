@@ -13,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.wonderer.wonderer.Completetourdir.Completetouractivity;
 import com.example.wonderer.wonderer.R;
 import com.example.wonderer.wonderer.Socialdir.dummytour;
 import com.example.wonderer.wonderer.loginregister.Login;
 import com.example.wonderer.wonderer.plandir.Main2Activity;
 import com.example.wonderer.wonderer.plandir.Plantour;
+import com.example.wonderer.wonderer.plandir.TravelPlaceList;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -74,25 +76,37 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
 
         if(ProfileActivity.trips.get(position) instanceof dummytour )
         {
-            dummytour com= (dummytour) ProfileActivity.trips.get(position);
+            final dummytour com= (dummytour) ProfileActivity.trips.get(position);
 
-            holder.likecount.setText(com.comment.size() + " likes");
-
+            holder.likecount.setText(com.likemap.size() + " likes");
+            holder.comme.setText(com.comment.size()+" Comments");
             Picasso.with(mContext).load(com.url.get(0)).into(holder.thumbnail);
             holder.title.setText("Completed");
+
+            holder.thumbnail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Completetouractivity.showtour=com;
+
+                    Intent i=new Intent(mContext,Completetouractivity.class);
+                    mContext.startActivity(i);
+                }
+            });
+
         }
         else
         {
             final Plantour pla=(Plantour) ProfileActivity.trips.get(position);
             Picasso.with(mContext).load(pla.Locationlist.get(0).url.get(0)).into(holder.thumbnail);
             holder.title.setText("Planned");
-            holder.likecount.setText("Click image To See Details");
+            holder.likecount.setText(pla.comment.size()+" Comments");
+            holder.comme.setText("Click to see details");
 
             holder.thumbnail.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Plantour plan=pla;
-                    Main2Activity.showplantour=plan;
+                    TravelPlaceList.plan=plan;
                     if(ProfileActivity.uid.equals(Login.userid))
                     Main2Activity.make=true;
                     else
@@ -102,9 +116,19 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.MyViewHo
                 }
             });
 
+            holder.overflow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pop=pla.tourid;
+                    showPopupMenu(v);
+                }
+            });
+
         }
 
         Picasso.with(mContext).load(ProfileActivity.showprofile.Image).into(holder.profilephoto);
+
+
 
 
     }

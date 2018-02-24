@@ -26,7 +26,6 @@ import com.example.wonderer.wonderer.Homedir.Detailhome;
 import com.example.wonderer.wonderer.Homedir.Home;
 import com.example.wonderer.wonderer.Homedir.Homelist;
 import com.example.wonderer.wonderer.R;
-import com.example.wonderer.wonderer.Socialdir.SocialActivity;
 import com.example.wonderer.wonderer.Socialdir.dummytour;
 import com.example.wonderer.wonderer.loginregister.Login;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -77,8 +76,8 @@ public class Main2Activity extends AppCompatActivity implements OnMapReadyCallba
 
     public List<Marker> mark=new ArrayList<Marker>();
 
-    public static Plantour showplantour=new Plantour();
-
+    //public static Plantour showplantour=new Plantour();
+public static int arraycount=0;
     FloatingActionButton fab1;
     FloatingActionButton fab2;
 int check=0;
@@ -87,9 +86,17 @@ int check=0;
     private Custom2nd mAdapter;
     private GoogleMap mMap;
 
-
     public static boolean make=false;
-
+    @Override
+    public void onResume()
+    {  // After a pause OR at startup
+        super.onResume();
+        if(TravelPlaceList.indicator==2) {
+            Intent i = new Intent(getApplicationContext(), Main2Activity.class);
+            startActivity(i);
+            TravelPlaceList.indicator=1;
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,12 +120,12 @@ c=this;
 
                     String key= Login.plantour.push().getKey();
                     String key2= Login.makeprofile.child(Login.userid).child("Plantour").push().getKey();
-                    Login.plantour.child(key).setValue(showplantour);
+                    Login.plantour.child(key).setValue(TravelPlaceList.plan);
                     Login.makeprofile.child(Login.userid).child("Plantour").child(key2).setValue(key);
 
-                    TravelPlaceList.plantour=new ArrayList<Place>();
+                    TravelPlaceList.ai=new ArrayList<Place>();
                     Homelist.hometour=new ArrayList<Home>();
-
+                    TravelPlaceList.plan=new Plantour();
                     finish();
                 }
                 else {
@@ -206,7 +213,7 @@ c=this;
         mRecyclerView = (RecyclerView) findViewById(R.id.list);//
         mRecyclerView.setLayoutManager(mStaggeredLayoutManager);//
         mRecyclerView.setHasFixedSize(true); //Data size is fixed - improves performance
-        mAdapter = new Custom2nd(this,showplantour.Locationlist);//
+        mAdapter = new Custom2nd(this,TravelPlaceList.plan.Locationlist);//
         mRecyclerView.setAdapter(mAdapter);//
 
 
@@ -216,21 +223,21 @@ c=this;
     private String getUrl() {
 
         String waypoint="&"+"waypoints=optimize:true";
-        for(int i=1;i<showplantour.Locationlist.size()-1;i++)
+        for(int i=1;i<TravelPlaceList.plan.Locationlist.size()-1;i++)
         {
-            waypoint+="|"+showplantour.Locationlist.get(i).location.lat+","+showplantour.Locationlist.get(i).location.lan;
+            waypoint+="|"+TravelPlaceList.plan.Locationlist.get(i).location.lat+","+TravelPlaceList.plan.Locationlist.get(i).location.lan;
         }
 
 
         waypoint+="|"+String.valueOf(myloc.getLatitude())+","+String.valueOf(myloc.getLongitude());
         // Origin of route
 
-        LatLng org=new LatLng(showplantour.Locationlist.get(0).location.lat,showplantour.Locationlist.get(0).location.lan);
+        LatLng org=new LatLng(TravelPlaceList.plan.Locationlist.get(0).location.lat,TravelPlaceList.plan.Locationlist.get(0).location.lan);
 
         String str_origin = "origin=" + org.latitude + "," + org.longitude;
-        org=new LatLng(showplantour.Locationlist.get(1).location.lat,showplantour.Locationlist.get(1).location.lan);
+        org=new LatLng(TravelPlaceList.plan.Locationlist.get(1).location.lat,TravelPlaceList.plan.Locationlist.get(1).location.lan);
         // Destination of route
-        String str_dest = "destination=" + showplantour.Locationlist.get(showplantour.Locationlist.size()-1).location.lat + "," + showplantour.Locationlist.get(showplantour.Locationlist.size()-1).location.lan;
+        String str_dest = "destination=" + TravelPlaceList.plan.Locationlist.get(TravelPlaceList.plan.Locationlist.size()-1).location.lat + "," + TravelPlaceList.plan.Locationlist.get(TravelPlaceList.plan.Locationlist.size()-1).location.lan;
 
 
         // Sensor enabled
@@ -253,23 +260,102 @@ c=this;
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;Toast.makeText(this, "maptest", Toast.LENGTH_SHORT).show();
+
+
+        googleMap.setOnMarkerClickListener(this);
+
+
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                int i=(int)(marker.getTag());
+
+                if(i<100)
+                {
+                    Detailhome.thishome= Homelist.homelist.get(i);
+                    Intent intent4 = new Intent(getApplicationContext(), Detailhome.class);
+                    startActivity(intent4);
+                }
+                else if(i<200)
+                {
+
+                    DetailLocation.thisplace=TravelPlaceList.ai.get(i-100);
+                    Intent intent4 = new Intent(getApplicationContext(), DetailLocation.class);
+                    startActivity(intent4);
+                }
+                else if(i<300)
+                {
+                    DetailLocation.thisplace=TravelPlaceList.plan.Locationlist.get(i-200);
+                    Intent intent4 = new Intent(getApplicationContext(), DetailLocation.class);
+                    startActivity(intent4);
+
+                }
+                else
+                {
+                    DetailLocation.thisplace=TravelPlaceList.placelist2.get(i-300);
+                    Intent intent4 = new Intent(getApplicationContext(), DetailLocation.class);
+                    startActivity(intent4);
+                }
+
+
+            }
+        });
+
+
         mMap.setLocationSource (null);
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(showplantour.Locationlist.get(0).location.lat, showplantour.Locationlist.get(0).location.lan);
+        LatLng sydney = new LatLng(TravelPlaceList.plan.Locationlist.get(0).location.lat, TravelPlaceList.plan.Locationlist.get(0).location.lan);
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        for(int i=0;i<showplantour.Locationlist.size();i++) {
-             sydney = new LatLng(showplantour.Locationlist.get(i).location.lat, showplantour.Locationlist.get(i).location.lan);
-            mMap.addMarker(new MarkerOptions().position(sydney).title(showplantour.Locationlist.get(i).Name));
+        mMap.setMinZoomPreference(10.0f);
+        mMap.setMinZoomPreference(13.0f);
+
+
+        for(int i=0;i<TravelPlaceList.plan.Locationlist.size();i++) {
+             sydney = new LatLng(TravelPlaceList.plan.Locationlist.get(i).location.lat, TravelPlaceList.plan.Locationlist.get(i).location.lan);
+          Marker m=  mMap.addMarker(new MarkerOptions().position(sydney).title(TravelPlaceList.plan.Locationlist.get(i).Name).snippet("and snippet")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            m.setTag(200+i);
         }
+
+
+
+        if(Main2Activity.arraycount==0)
+        for(int i=0;i<TravelPlaceList.ai.size();i++) {
+            sydney = new LatLng(TravelPlaceList.ai.get(i).location.lat, TravelPlaceList.ai.get(i).location.lan);
+            Marker m=  mMap.addMarker(new MarkerOptions().position(sydney).title(TravelPlaceList.ai.get(i).Name).snippet("Suggested Place\n Click to show details")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)).alpha(.4f));
+
+            m.setTag(100+i);
+            m.showInfoWindow();
+            if(i==1)
+
+                break;
+        }
+
+        if(Main2Activity.arraycount==1)
+        for(int i=0;i<TravelPlaceList.placelist2.size();i++) {
+            sydney = new LatLng(TravelPlaceList.ai.get(i).location.lat, TravelPlaceList.ai.get(i).location.lan);
+            Marker m=  mMap.addMarker(new MarkerOptions().position(sydney).title(TravelPlaceList.placelist2.get(i).Name).snippet("You will Love it\n Click to show details")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)).alpha(.4f));
+
+            m.setTag(300+i);
+            m.showInfoWindow();
+            if(i==1)
+
+                break;
+        }
+
+
+
         mark=new ArrayList<Marker>();
         BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.home_icon);
 
-        for(int i = 0; i< SocialActivity.homelist.size(); i++)
+        for(int i = 0; i< Homelist.homelist.size(); i++)
         {
-             sydney = new LatLng(SocialActivity.homelist.get(i).location.lat, SocialActivity.homelist.get(i).location.lan);
-          Marker m= mMap.addMarker(new MarkerOptions().position(sydney).title(SocialActivity.homelist.get(i).address).icon(icon));
+             sydney = new LatLng(Homelist.homelist.get(i).location.lat, Homelist.homelist.get(i).location.lan);
+          Marker m= mMap.addMarker(new MarkerOptions().position(sydney).title(Homelist.homelist.get(i).address).icon(icon));
             m.setTag(i);
             mark.add(m);
         }
@@ -278,7 +364,8 @@ c=this;
         mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
-                if(once==0) {
+                if(once==0)
+                {
                     myloc = location;
                     LatLng l = new LatLng(myloc.getLatitude(), myloc.getLongitude());
                     //  mMap.addMarker(new MarkerOptions().position(l).title("mylocation"));
@@ -298,8 +385,8 @@ c=this;
 
         //move map camera
 
-        if(showplantour.Locationlist.size()>0)
-        {LatLng start=new LatLng(showplantour.Locationlist.get(0).location.lat,showplantour.Locationlist.get(0).location.lan);
+        if(TravelPlaceList.plan.Locationlist.size()>0)
+        {LatLng start=new LatLng(TravelPlaceList.plan.Locationlist.get(0).location.lat,TravelPlaceList.plan.Locationlist.get(0).location.lan);
             mMap.moveCamera(CameraUpdateFactory.newLatLng(start));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(11));}
 
@@ -318,67 +405,17 @@ c=this;
         }
 
         mMap.setMyLocationEnabled(true);
-       /* mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            @Override
-            public void onMapClick(LatLng point) {
-
-                // Already two locations
-                if (MarkerPoints.size() > 1) {
-                   // MarkerPoints.clear();
-                  //  mMap.clear();
-                }
-
-                // Adding new item to the ArrayList
-                MarkerPoints.add(point);
-
-                // Creating MarkerOptions
-                MarkerOptions options = new MarkerOptions();
-
-                // Setting the position of the marker
-                options.position(point);
-
-
-           //     if (MarkerPoints.size() == 1) {
-            //        options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-             //   } else if (MarkerPoints.size() == 2) {
-             //       options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-             //   }
-
-
-                // Add new marker to the Google Map Android API V2
-            //    mMap.addMarker(options);
-
-                // Checks, whether start and end locations are captured
-                if (MarkerPoints.size() >= 2) {
-                    LatLng origin = MarkerPoints.get(0);
-                    LatLng dest = MarkerPoints.get(1);
-
-                    // Getting URL to the Google Directions API
-                    String url = getUrl(origin, dest);
-                    Log.d("onMapClick", url.toString());
-                    FetchUrl FetchUrl = new FetchUrl();
-
-                    // Start downloading json data from Google Directions API
-                    FetchUrl.execute(url);
-                    //move map camera
-                    mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-                }
-
-            }
-        });*/
 
     }
 
     @Override
     public boolean onMarkerClick(final Marker marker) {
 
-          int i=(int)(marker.getTag());
-Toast.makeText(getApplicationContext(),"tosted",Toast.LENGTH_LONG).show();
-        Detailhome.thishome= Homelist.homelist.get(i);
-        Intent intent4 = new Intent(getApplicationContext(), Detailhome.class);
-        startActivity(intent4);
+       // int i=(int)(marker.getTag());
+        Toast.makeText(getApplicationContext(),"tosted",Toast.LENGTH_LONG).show();
+
+         marker.showInfoWindow();
 
         return true;
     }

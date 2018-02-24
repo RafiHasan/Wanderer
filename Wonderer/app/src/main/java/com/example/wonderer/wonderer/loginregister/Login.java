@@ -43,6 +43,8 @@ public class Login extends AppCompatActivity {
     public static DatabaseReference maketour;
     public static DatabaseReference plantour;
     public static DatabaseReference home;
+    public static DatabaseReference root;
+
     public static String userid;
 
     public static Profile userprofile;
@@ -91,6 +93,7 @@ public class Login extends AppCompatActivity {
                     maketour= FirebaseDatabase.getInstance().getReference("Newtrip");
                     plantour=FirebaseDatabase.getInstance().getReference("Plantrip");
                     home= FirebaseDatabase.getInstance().getReference("Newhome");
+                    root=FirebaseDatabase.getInstance().getReference();
                     makeprofile.child(userid).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {

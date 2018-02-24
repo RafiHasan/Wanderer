@@ -22,6 +22,7 @@ import com.example.wonderer.wonderer.Util.Bottombarnav;
 import com.example.wonderer.wonderer.loginregister.Login;
 import com.example.wonderer.wonderer.plandir.Main2Activity;
 import com.example.wonderer.wonderer.plandir.Plantour;
+import com.example.wonderer.wonderer.plandir.TravelPlaceList;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -92,7 +93,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.MyViewHold
                    @Override
                    public void onClick(View v) {
 
-                       ProfileActivity.showprofile=pro;
+
                        ProfileActivity.uid=social.userid;
                        Bottombarnav.x=4;
                        Intent i=new Intent(mContext,ProfileActivity.class);
@@ -266,7 +267,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.MyViewHold
                    @Override
                    public void onClick(View v) {
 
-                       ProfileActivity.showprofile=pro;
+
                        ProfileActivity.uid=plan.Userid;
                        Bottombarnav.x=4;
                        Intent i=new Intent(mContext,ProfileActivity.class);
@@ -324,7 +325,7 @@ public class SocialAdapter extends RecyclerView.Adapter<SocialAdapter.MyViewHold
        holder.thumbnail.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               Main2Activity.showplantour=plan;
+               TravelPlaceList.plan=plan;
                Intent i=new Intent(mContext,Main2Activity.class);
                mContext.startActivity(i);
            }

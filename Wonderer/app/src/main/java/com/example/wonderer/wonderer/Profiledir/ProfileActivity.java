@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wonderer.wonderer.R;
 import com.example.wonderer.wonderer.Socialdir.dummytour;
@@ -34,7 +35,6 @@ public class ProfileActivity extends Bottombarnav {
 
     public static List<Object> trips=new ArrayList<Object>();
     public static Profile showprofile= Login.userprofile;
-
      ImageView propic;
      TextView name;
      TextView loc;
@@ -52,10 +52,7 @@ public class ProfileActivity extends Bottombarnav {
         loc=(TextView)findViewById(R.id.place);
         stat=(TextView)findViewById(R.id.statusdetail);
 
-        Picasso.with(this).load(showprofile.Image).into(propic);
-        name.setText(showprofile.Name);
-        loc.setText(showprofile.Location);
-        stat.setText(showprofile.Status);
+
 
         adapter = new ProfileAdapter(this);
 
@@ -67,21 +64,60 @@ public class ProfileActivity extends Bottombarnav {
         recyclerView.setAdapter(adapter);
 
 
-        Login.maketour.addListenerForSingleValueEvent(new ValueEventListener() {
+        Login.makeprofile.child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-trips=new ArrayList<Object>();
-                for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
+
+                showprofile=dataSnapshot.getValue(Profile.class);
+                Picasso.with(getApplicationContext()).load(showprofile.Image).into(propic);
+                name.setText(showprofile.Name);
+                loc.setText(showprofile.Location);
+                stat.setText(showprofile.Status);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+        Login.root.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                trips=new ArrayList<Object>();
+
+                DataSnapshot maketour=dataSnapshot.child("Newtrip");
+                DataSnapshot plantour=dataSnapshot.child("Plantrip");
+                Toast.makeText(getApplicationContext(),Login.userid+" "+uid,Toast.LENGTH_LONG).show();
+
+                if(uid.equals(Login.userid))
+                for (DataSnapshot imageSnapshot: plantour.getChildren()) {
+                    Plantour d=imageSnapshot.getValue(Plantour.class);
+
+                        d.tourid=imageSnapshot.getKey().toString();
+                        if(d.Userid.equals(uid))
+                        {
+                            trips.add(d);
+
+                        }
+
+
+                }
+
+                for (DataSnapshot imageSnapshot: maketour.getChildren()) {
                     dummytour d=imageSnapshot.getValue(dummytour.class);
+                    d.tourid=imageSnapshot.getKey().toString();
 
                     if(d.userid.equals(uid))
                     {
                         trips.add(d);
 
                     }
-
                 }
 
+
+                adapter.notifyDataSetChanged();
 
             }
 
@@ -91,45 +127,6 @@ trips=new ArrayList<Object>();
             }
         });
 
-
-        Login.plantour.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                for (DataSnapshot imageSnapshot: dataSnapshot.getChildren()) {
-                    Plantour d=imageSnapshot.getValue(Plantour.class);
-
-                    if(d.Userid.equals(uid))
-                    {
-                       if(Login.userid.equals(uid))
-                       {
-                        trips.add(d);
-                        }
-                        else
-                       {
-                           if(d.showing.equals("Yes"))
-                           {
-                               trips.add(d);
-
-                           }
-                       }
-                    }
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-
-
-        adapter.notifyDataSetChanged();
 
 
     }

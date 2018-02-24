@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.wonderer.wonderer.R;
@@ -36,6 +38,27 @@ public class DetailLocation extends FragmentActivity implements OnMapReadyCallba
     List<Fragmentdetail> imagelist=new ArrayList<Fragmentdetail>();
 
     @Override
+    public void onBackPressed()
+    {
+        if(TravelPlaceList.ai.size()>0)
+        {
+
+            TravelPlaceList.indicator=2;
+            Main2Activity.arraycount++;
+            Main2Activity.arraycount%=2;
+
+            if(Main2Activity.arraycount==1)
+                TravelPlaceList.ai.remove(thisplace);
+            if(Main2Activity.arraycount==0)
+                TravelPlaceList.placelist2.remove(thisplace);
+
+        }
+
+        finish();
+    }
+
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
 
 
@@ -45,6 +68,44 @@ public class DetailLocation extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Switch swi=(Switch)findViewById(R.id.switch2);
+        swi.setChecked(false);
+
+        for(int i=0;i<TravelPlaceList.plan.Locationlist.size();i++)
+        {
+            if(thisplace.address.equals(TravelPlaceList.plan.Locationlist.get(i).address))
+            {
+                swi.setChecked(true);
+                break;
+            }
+        }
+
+
+
+
+        swi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                {
+                    TravelPlaceList.plan.Locationlist.add(thisplace);
+                    TravelPlaceList.indicator=2;
+                    TravelPlaceList.ai.remove(thisplace);
+                    TravelPlaceList.placelist2.remove(thisplace);
+
+                }
+                else
+                {   TravelPlaceList.ai.add(thisplace);
+                    TravelPlaceList.placelist2.add(thisplace);
+                    TravelPlaceList.plan.Locationlist.remove(thisplace);
+
+                    TravelPlaceList.indicator=2;
+
+                }
+
+            }
+        });
 
 
         for(int i=0;i<thisplace.url.size();i++)

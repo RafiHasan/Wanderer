@@ -77,19 +77,28 @@ public class TravelListAdapter extends RecyclerView.Adapter<TravelListAdapter.Vi
 
 final Place thisplace=TravelPlaceList.placelist.get(position);
 
+
     holder.placeName.setText(thisplace.Name);
    // holder.reviu.setText(String.valueOf(placename.rater));
     holder.description.setText(thisplace.Description);
    // holder.rating.setRating(placename.rating);
    // holder.selection.setChecked(placename.selected);
       holder.selection.setVisibility(View.VISIBLE);
+
+      holder.selection.setChecked(false);
+
+      if(TravelPlaceList.plan.Locationlist.contains(TravelPlaceList.placelist.get(position)))
+      {
+          holder.selection.setChecked(true);
+      }
+
     holder.selection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if(holder.selection.isChecked())
-            TravelPlaceList.plantour.add(thisplace);
+            TravelPlaceList.plan.Locationlist.add(thisplace);
         else
-            TravelPlaceList.plantour.remove(thisplace);
+            TravelPlaceList.plan.Locationlist.remove(thisplace);
       }
     });
 
