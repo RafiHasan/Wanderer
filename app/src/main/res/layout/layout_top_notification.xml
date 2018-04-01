@@ -1,0 +1,30 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/white_grey_border_bottom"
+        android:elevation="10dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:gravity="center_vertical"
+            android:textSize="15sp"
+            android:textColor="#000"
+            android:id="@+id/name_trip"
+            android:background="@null"
+
+            android:text="Notification"
+            android:layout_marginStart="15dp"
+            />
+
+
+
+
+    </RelativeLayout>
+
+
+</merge>
